@@ -1,0 +1,451 @@
+@font-face {
+    font-family: 'bebas';
+    src: url("./Righteous-Regular.ttf") format('truetype');
+}
+
+html{
+    font-family: "bebas";
+}
+
+
+/*########## Game canvas ###########*/
+
+#canvas{
+    border-radius: 5rem;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin: auto;
+}
+
+.game-container{
+    width: 70%;
+    margin: auto;
+    margin-top: 5rem;
+}
+
+
+.pass-button{
+    background: rgb(52, 54, 76);
+    color: white;
+    font-family: "bebas";
+    padding: 0.35em;
+    padding-left: 1.2em;
+    font-size: 24px;
+    font-weight: 500;
+    border-radius: 0.9em;
+    border: none;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
+    overflow: hidden;
+    position: relative;
+    width: 10em;
+    height: 2.8em;
+    padding-right: 3.3em;
+    cursor: pointer;
+}
+
+.pass-button .button-icon{
+    background: white;
+    color: rgb(52, 54, 76);
+    margin-left: 1em;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.2em;
+    width: 2.2em;
+    border-radius: 0.7em;
+    box-shadow: 0.1em 0.1em 0.6em 0.2em rgb(34, 35, 49);
+    right: 0.3em;
+    transition: all 0.3s;
+}
+
+
+.pass-button:hover .button-icon{
+    width: calc(100% - 0.6em);
+}
+
+.pass-button:active .icon{
+    transform: scale(0.95);
+}
+
+.surrender-button{
+    background: rgb(52, 54, 76);
+    color: white;
+    font-family: "bebas";
+    padding: 0.35em;
+    padding-left: 1.2em;
+    font-size: 24px;
+    font-weight: 500;
+    border-radius: 0.9em;
+    border: none;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
+    overflow: hidden;
+    position: relative;
+    height: 2.8em;
+    width: 10em;
+    padding-right: 3.3em;
+    cursor: pointer;
+}
+
+.surrender-button .button-icon{
+    background: white;
+    color: rgb(52, 54, 76);
+    margin-left: 1em;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.2em;
+    width: 2.2em;
+    border-radius: 0.7em;
+    box-shadow: 0.1em 0.1em 0.6em 0.2em rgb(34, 35, 49);
+    right: 0.3em;
+    transition: all 0.3s;
+}
+
+.surrender-button:hover .button-icon{
+    width: calc(100% - 0.6em);
+}
+
+.surrender-button:active .icon{
+    transform: scale(0.95);
+}
+
+
+.game-buttons{
+    display: flex;
+    width: 80%;
+    margin: auto;
+    justify-content: space-evenly;
+    margin-top: 3rem;
+}
+
+
+/*############ Navigatie ##############*/
+
+.main-nav{
+    position: relative;
+    margin: auto;
+    width: 40%;
+    margin-top: 2rem;
+}
+
+.menu-ul{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: rgb(183, 192, 216);
+    border-radius: 5rem;
+    padding: 0;
+    height: 70px;
+}
+
+.menu-ul .menu-link{
+    list-style-type: none;
+    padding: 1em;
+    display: flex;
+}
+
+.menu-ul .menu-link a{
+    text-decoration: none;
+    color: white;
+}
+
+/*########### Home Link ###############*/
+
+.menu-home{
+    list-style-type: none;
+    width: 50px;
+    height: 50px;
+    background-color:rgb(52, 54, 76);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
+    cursor: pointer;
+    transition-duration: .3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.home-icon{
+    width: 30px;
+    height: 30px;
+    transition-duration: .3s;
+}
+
+.home-icon path{
+    fill: white;
+    transform: scale(1.5);
+}
+
+.menu-home:hover{
+    width: 140px;
+    border-radius: 50px;
+    transition-duration: .3s;
+    align-items: center;
+}
+
+.menu-home:hover .home-icon{
+    transition-duration: .3s;
+    transform: translateY(90%);
+}
+
+.menu-home::before{
+    position: absolute;
+    top: -20px;
+    content: "Home";
+    color: white;
+    transition-duration: .3s;
+    font-size: 20px;
+    opacity: 0;
+}
+
+.menu-home:hover::before{
+    opacity: 1;
+    transform: translateY(30px);
+    transition-duration: .3s;
+}
+
+
+/*########### Go Link ###############*/
+
+.menu-go{
+    list-style-type: none;
+    width: 50px;
+    height: 50px;
+    background-color:rgb(52, 54, 76);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
+    cursor: pointer;
+    transition-duration: .3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.go-icon{
+    width: 30px;
+    height: 30px;
+    transition-duration: .3s;
+    margin: 2px 1.5px 0 0;
+}
+
+.go-icon path{
+    fill: white;
+    transform: scale(1.3);
+}
+
+.go-icon circle{
+    fill: white;
+    transform: scale(1.3);
+}
+
+.menu-go:hover{
+    width: 140px;
+    border-radius: 50px;
+    transition-duration: .3s;
+    align-items: center;
+}
+
+.menu-go:hover .go-icon{
+    transition-duration: .3s;
+    transform: translateY(90%);
+}
+
+.menu-go::before{
+    position: absolute;
+    top: -20px;
+    content: "Play Now";
+    color: white;
+    transition-duration: .3s;
+    font-size: 10px;
+    opacity: 0;
+}
+
+.menu-go:hover::before{
+    opacity: 1;
+    font-size: 20px;
+    transform: translateY(30px);
+    transition-duration: .3s;
+}
+
+
+/*########### About Link ###############*/
+
+.menu-about{
+    list-style-type: none;
+    width: 50px;
+    height: 50px;
+    background-color:rgb(52, 54, 76);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
+    cursor: pointer;
+    transition-duration: .3s;
+    overflow: hidden;
+    position: relative;
+}
+
+.about-icon{
+    width: 30px;
+    height: 30px;
+    transition-duration: .3s;
+    margin: 2px 1.5px 0 0;
+}
+
+.about-icon path{
+    fill: white;
+    transform: scale(1.3);
+}
+
+.about-icon circle{
+    fill: white;
+    transform: scale(1.3);
+}
+
+.menu-about:hover{
+    width: 140px;
+    border-radius: 50px;
+    transition-duration: .3s;
+    align-items: center;
+}
+
+.menu-about:hover .about-icon{
+    transition-duration: .3s;
+    transform: translateY(90%);
+}
+
+.menu-about::before{
+    position: absolute;
+    top: -20px;
+    content: "Rules";
+    color: white;
+    transition-duration: .3s;
+    font-size: 10px;
+    opacity: 0;
+}
+
+.menu-about:hover::before{
+    opacity: 1;
+    font-size: 20px;
+    transform: translateY(30px);
+    transition-duration: .3s;
+}
+
+
+/*######### Title #########*/
+
+.main-title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    color:rgb(52, 54, 76);
+    margin: auto;
+    margin-top: 10vh;
+    width: 50%;
+    text-align: center;
+}
+
+.main-title h2{
+    text-align: center;
+    font-size: 2rem;
+    margin: auto;
+}
+
+.main-title h3{
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+
+.loader{
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 23rem;
+    margin: auto;
+    margin-top: 6vh;
+    border-radius: 50%;
+    animation: eyeMove 10s infinite, blink 10s infinite;
+}
+
+.loader::after,
+.loader::before {
+  content: "";
+  display: inline-block;
+  width: 10rem;
+  height: 10rem;
+  background-color: white;
+  box-shadow: 0 0 20px rgb(52, 54, 76);
+  background-image: radial-gradient(circle 2.5rem, rgb(52, 54, 76) 100%, transparent 0);
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  animation: eyeMove 10s infinite, blink 10s infinite;
+}
+
+@keyframes blink {
+    0%,
+    10%,
+    12%,
+    20%,
+    22%,
+    40%,
+    42%,
+    60%,
+    62%,
+    70%,
+    72%,
+    90%,
+    92%,
+    98%,
+    100% {
+      height: 10rem;
+    }
+    11%,
+    21%,
+    41%,
+    61%,
+    71%,
+    91%,
+    99% {
+      height: 2rem;
+    }
+}
+
+@keyframes eyeMove {
+    0%,
+    10% {
+      background-position: 0rem 0rem;
+    }
+    13%,
+    40% {
+      background-position: -3rem 0rem;
+    }
+    43%,
+    70% {
+      background-position: 3rem 0rem;
+    }
+    73%,
+    90% {
+      background-position: 0rem 3rem;
+    }
+    93%,
+    100% {
+      background-position: 0rem 0rem;
+    }
+}

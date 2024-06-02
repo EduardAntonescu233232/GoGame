@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PsyGOpath</title>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body id="gameBody">
+        <nav class="main-nav">
+            <ul class="menu-ul">
+                <li class="menu-home">
+                    <a href="#">
+                        <svg class="home-icon">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                            </path>
+                          </svg>
+                    </a>
+                </li>
+                <li class="menu-go" id="playNowBtn">
+                    <a class="game-link" href="#">
+                        <svg class="go-icon">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                            <circle cx="7.5" cy="7.5" r="1.5"/>
+                            <circle cx="12" cy="12" r="1.5"/>
+                            <circle cx="16.5" cy="16.5" r="1.5"/>
+                          </svg>
+                    </a>
+                </li>
+                <li class="menu-about">
+                    <a href="#">
+                        <svg class="about-icon">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+                            <circle cx="12" cy="17" r="1"/>
+                          </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="main-title">
+            <h1>The PsyGOpath</h1>
+            <h2>Your sanity is at stake, but the rewards of mastery are beyond measure.</h2>
+            <h3>As you navigate the treacherous landscape of the Go board, you'll confront your deepest fears and conquer your most cunning adversary, <u>The PsyGOpath</u>.</h2>
+        </div>
+        <span class="loader"></span>
+        
+        <div class="game-container" style="display: none;">  
+            <canvas id="canvas">
+            </canvas>
+            <div class="game-buttons">
+                <button class= "pass-button"> 
+                    Pass
+                    <div class="button-icon">
+                        <h1>⤍</h1>  
+                    </div>
+                </button>
+                <button class= "surrender-button"> 
+                    Surrender
+                    <div class="button-icon">
+                        <h1>⤍</h1>  
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        
+        <script type="module" src="index.js"></script>
+        <script type="module" src="menu.js"></script>
+    </body>
+</html>
