@@ -1,3 +1,7 @@
+.blur{
+    filter: blur(5px);
+}
+
 @font-face {
     font-family: 'bebas';
     src: url("./Righteous-Regular.ttf") format('truetype');
@@ -16,6 +20,7 @@ html{
     justify-content: center;
     position: relative;
     margin: auto;
+    transition: ease-in 0.5;
 }
 
 .game-container{
@@ -356,7 +361,7 @@ html{
     font-size: 3rem;
     color:rgb(52, 54, 76);
     margin: auto;
-    margin-top: 10vh;
+    margin-top: 5vh;
     width: 50%;
     text-align: center;
 }

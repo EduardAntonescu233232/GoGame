@@ -128,7 +128,7 @@ function initializeGame(){
                 if(currentPlayerType === "ai"){
                     handlePass()
                 }
-                if(captureStones().length === 0){
+                if(captureStones().length === 0 && currentPlayerType === "human"){
                     return
                 }
             } 
@@ -251,37 +251,6 @@ function initializeGame(){
         return territory
     }
 
-    // function handlePass(){
-    //     consecutivePasses++
-    //     console.log("Consecutive Passes: ", consecutivePasses)
-    //     if(consecutivePasses === 2){
-    //         endGame()
-    //     }
-    //     else{
-    //         if(currentPlayerType === "ai"){
-    //             PassOverlay("PsyGOpath passed")
-    //             currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)"
-    //             currentPlayerType = "human"
-
-    //             updateBoard()
-
-    //             if (currentPlayerType === "ai") {
-    //                 setTimeout(playAIMove, 1000)
-    //                 consecutivePasses = 0
-    //             }
-    //         }
-    //         else {
-    //             currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)"
-    //             currentPlayerType = currentPlayerType === "human" ? "ai" : "human"
-    //             updateBoard();
-    //             if (currentPlayerType === "ai") {
-    //                 setTimeout(playAIMove, 1000);
-    //                 consecutivePasses = 0
-    //             }
-    //         }
-    //     }
-    // }
-
     function handlePass(){
         consecutivePasses++;
         console.log("Consecutive Passes: ", consecutivePasses);
@@ -289,46 +258,62 @@ function initializeGame(){
             endGame();
         } else {
             if(currentPlayerType === "ai"){
-                PassOverlay("PsyGOpath passed");
+                showPassMessage("PsyGOpath passed");
                 setTimeout(() => {
                     currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
                     currentPlayerType = "human";
-    
-                    updateBoard();
-                    if (currentPlayerType === "ai") {
-                        setTimeout(playAIMove, 1000);
-                        consecutivePasses = 0;
-                    }
-                }, 2000);
+                }, 4000);
             } else {
                 currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
                 currentPlayerType = currentPlayerType === "human" ? "ai" : "human";
                 updateBoard();
                 if (currentPlayerType === "ai") {
-                    setTimeout(playAIMove, 1000);
-                    consecutivePasses = 0;
+                    setTimeout(() => {
+                        const aiMove = playAIMove();
+                        if(aiMove){
+                            consecutivePasses = 0
+                        }
+                        else{
+                            consecutivePasses++
+                            if (consecutivePasses === 2) {
+                                endGame();
+                            }
+                        }
+                    }, 1000);
                 }
             }
         }
     }
 
-    function PassOverlay(message){
-        c.fillStyle = "rgba(52, 54, 76, 0.5)"
-        c.fillRect(0, 0, canvasSize, canvasSize)
-
-        c.fillStyle = "white"
-        c.font = "60px 'bebas'"
-        c.textAlign = "center"
-        c.fillText(message, canvasSize / 2, canvasSize / 2 - 70)
-    }
-
-    function clearPassOverlay(){
-        c.clearRect(0, 0, canvasSize, canvasSize)
-        drawBackground()
-        drawBoard()
-        for(let stone of stones){
-            stone.draw()
-        }
+    function showPassMessage(message){
+        const passMessage = document.createElement('div')
+        passMessage.textContent = message
+        passMessage.style.position = 'absolute'
+        passMessage.style.top = '50%'
+        passMessage.style.left = '50%'
+        passMessage.style.transform = 'translate(-50%, -50%)'
+        passMessage.style.backgroundColor = 'rgba(52, 54, 76, 0.8)'
+        passMessage.style.color = 'white'
+        passMessage.style.padding = '20px'
+        passMessage.style.fontSize = '2rem'
+        passMessage.style.textAlign = 'center'
+        passMessage.style.borderRadius = '25px'
+        passMessage.style.zIndex = '999'
+        passMessage.style.opacity = '0'
+        passMessage.style.transition = 'ease-in 0.5s'
+        document.body.appendChild(passMessage)
+        canvas.style.filter = 'blur(5px)'
+        setTimeout(() => {
+            passMessage.style.opacity = '1'
+            passMessage.style.display = 'block'
+        }, 100)
+        setTimeout(() =>{
+            passMessage.style.opacity = 0
+            passMessage.style.display = 'none'
+        }, 2000)
+        setTimeout(() =>{
+            canvas.style.filter = 'blur(0px)'
+        }, 2200)
     }
     
 
@@ -358,11 +343,11 @@ function initializeGame(){
         drawBackground()
 
         c.fillStyle = "rgb(52, 54, 76)"
-        c.font = "60px 'bebas'"
+        c.font = "2rem 'bebas'"
         c.textAlign = "center"
         c.fillText("Game Over", canvasSize / 2 , canvasSize / 2 - 70)
 
-        c.font = "40px 'bebas'"
+        c.font = "1.5rem 'bebas'"
         if(blackScore > whiteScore){
             c.fillText(`You won by ${blackScore - whiteScore} points!`, canvasSize / 2, canvasSize / 2)
         }
@@ -386,10 +371,14 @@ function initializeGame(){
         const boardY = Math.round((y - cellSize) / cellSize)
 
         if(boardX >= 0 && boardX < boardSize && boardY >= 0 && boardY < boardSize){
-            addStone(boardX, boardY)
-            consecutivePasses = 0
-            currentPlayerType = "ai"
-            setTimeout(playAIMove, 1000)
+            if(isEmpty(boardX, boardY)){
+                addStone(boardX, boardY)
+                consecutivePasses = 0
+                if(getStone(boardX, boardY)){
+                    currentPlayerType = "ai"
+                    setTimeout(playAIMove, 1000)
+                }
+            }
         }  
     }
 
