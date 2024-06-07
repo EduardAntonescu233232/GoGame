@@ -2,7 +2,7 @@ function initializeGame(){
     const canvas = document.getElementById('canvas')
     const c = canvas.getContext('2d')
 
-    
+    canvas.style.transition = 'ease-in 0.3s'
     let canvasSize
     let cellSize
     const boardSize = 5
@@ -251,38 +251,109 @@ function initializeGame(){
         return territory
     }
 
-    function handlePass(){
-        consecutivePasses++;
-        console.log("Consecutive Passes: ", consecutivePasses);
-        if(consecutivePasses === 2){
-            endGame();
-        } else {
-            if(currentPlayerType === "ai"){
+    function handlePass() {
+        if (currentPlayerType === "ai") {
+            consecutivePasses++;
+            console.log("Consecutive Passes: ", consecutivePasses);
+            if (consecutivePasses === 2) {
+                endGame();
+            } else {
                 showPassMessage("PsyGOpath passed");
                 setTimeout(() => {
                     currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
                     currentPlayerType = "human";
                 }, 4000);
-            } else {
-                currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
-                currentPlayerType = currentPlayerType === "human" ? "ai" : "human";
-                updateBoard();
-                if (currentPlayerType === "ai") {
-                    setTimeout(() => {
-                        const aiMove = playAIMove();
-                        if(aiMove){
-                            consecutivePasses = 0
+            }
+        } else {
+            showSurePass();
+        }
+    }
+
+    function confirmPass() {
+        consecutivePasses++;
+        console.log("Consecutive Passes: ", consecutivePasses);
+        if (consecutivePasses === 2) {
+            endGame();
+        } else {
+            currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
+            currentPlayerType = currentPlayerType === "human" ? "ai" : "human";
+            updateBoard();
+            if (currentPlayerType === "ai") {
+                setTimeout(() => {
+                    const aiMove = playAIMove();
+                    if (aiMove) {
+                        consecutivePasses = 0;
+                        console.log("s-a facut o miscare")
+                    } else {
+                        consecutivePasses++;
+                        console.log("AI passed")
+                        if (consecutivePasses === 2) {
+                            endGame();
                         }
                         else{
-                            consecutivePasses++
-                            if (consecutivePasses === 2) {
-                                endGame();
-                            }
+                            currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
+                            currentPlayerType = "human";
                         }
-                    }, 1000);
-                }
+                    }
+                }, 1000);
             }
         }
+    }
+
+    function showSurePass(){
+        const gameContainer = document.querySelector('.game-container')
+        canvas.style.filter = 'blur(10px)'
+        const sureMessage = document.createElement('div')
+        sureMessage.textContent = "Are you sure you want to pass?"
+        sureMessage.style.position = 'absolute'
+        sureMessage.style.top = '50%'
+        sureMessage.style.left = '50%'
+        sureMessage.style.transform = 'translate(-50%, -50%)'
+        sureMessage.style.marginTop = '-3.5rem'
+        sureMessage.style.backgroundColor = 'rgba(52, 54, 76, 0.6)'
+        sureMessage.style.color = 'white'
+        sureMessage.style.padding = '20px'
+        sureMessage.style.fontSize = '2rem'
+        sureMessage.style.textAlign = 'center'
+        sureMessage.style.borderRadius = '25px'
+        sureMessage.style.zIndex = '999'
+        sureMessage.style.opacity = '0'
+        sureMessage.style.transition = 'ease-in 0.3s'
+
+        const buttonContainer = document.createElement('div')
+        buttonContainer.style.marginTop = '20px'
+
+        const yesButton = document.createElement('button')
+        yesButton.textContent = "Yes"
+        yesButton.classList.add('yes-button')
+        yesButton.addEventListener('click', () => {
+            confirmPass()
+            sureMessage.style.opacity = '0'
+            gameContainer.removeChild(sureMessage)
+            canvas.style.filter = 'blur(0px)'
+        })
+
+
+        const noButton = document.createElement('button')
+        noButton.textContent = "No";
+        noButton.classList.add('no-button')
+        noButton.addEventListener('click', () => {
+           
+            sureMessage.style.opacity = '0'
+            gameContainer.removeChild(sureMessage);
+            canvas.style.filter = 'blur(0px)'
+        });
+        buttonContainer.appendChild(yesButton)
+        buttonContainer.appendChild(noButton)
+        sureMessage.appendChild(buttonContainer)
+        
+        setTimeout(() =>{
+            gameContainer.appendChild(sureMessage)
+            setTimeout(() =>{
+                sureMessage.style.opacity = '1'
+            }, 100)
+        }, 300)
+        
     }
 
     function showPassMessage(message){
@@ -292,6 +363,7 @@ function initializeGame(){
         passMessage.style.top = '50%'
         passMessage.style.left = '50%'
         passMessage.style.transform = 'translate(-50%, -50%)'
+        passMessage.style.marginTop = '-2.5rem'
         passMessage.style.backgroundColor = 'rgba(52, 54, 76, 0.8)'
         passMessage.style.color = 'white'
         passMessage.style.padding = '20px'
@@ -301,8 +373,9 @@ function initializeGame(){
         passMessage.style.zIndex = '999'
         passMessage.style.opacity = '0'
         passMessage.style.transition = 'ease-in 0.5s'
-        document.body.appendChild(passMessage)
-        canvas.style.filter = 'blur(5px)'
+        const gameContainer = document.querySelector('.game-container')
+        gameContainer.appendChild(passMessage)
+        canvas.style.filter = 'blur(10px)'
         setTimeout(() => {
             passMessage.style.opacity = '1'
             passMessage.style.display = 'block'
@@ -384,7 +457,7 @@ function initializeGame(){
 
     function playAIMove() {
         if (isGameOver) {
-            return;
+            return false;
         }
 
         const state = new GameState(boardSize, stones, currentPlayer);
@@ -395,8 +468,10 @@ function initializeGame(){
             addStone(move.x, move.y);
             updateBoard();
             currentPlayerType = "human";
+            return true
         } else {
             handlePass();
+            return false
         }
     }
 
