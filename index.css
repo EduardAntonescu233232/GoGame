@@ -8,8 +8,19 @@
 }
 
 html{
+    height: 100vh;
     font-family: "bebas";
+    background-image: url(/wave.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size:cover;
 }
+
+body{
+    margin: 0;
+    padding: 0;
+}
+
 
 
 /*########## Game canvas ###########*/
@@ -19,7 +30,8 @@ html{
     display: block;
     position: relative;
     margin: auto;
-    transition: ease-in 0.5;
+    transition: ease-in 0.3s;
+    box-shadow: 0 10px 20px rgb(52, 54, 76);
 }
 
 .game-container{
@@ -39,7 +51,7 @@ html{
     padding-left: 1.2em;
     font-size: 24px;
     font-weight: 500;
-    border-radius: 0.9em;
+    border-radius: 1.5em;
     border: none;
     letter-spacing: 0.05em;
     display: flex;
@@ -60,13 +72,59 @@ html{
     position: absolute;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     height: 2.2em;
     width: 2.2em;
-    border-radius: 0.7em;
+    border-radius: 1.6rem;
     box-shadow: 0.1em 0.1em 0.6em 0.2em rgb(34, 35, 49);
     right: 0.3em;
     transition: all 0.3s;
+}
+
+.button-icon .circle{
+    background-color: rgb(52, 54, 76);
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 1.5em;
+    transition: ease-in 0.5s;
+}
+
+.circle::after{
+    content: " ";
+    background-color: rgb(52, 54, 76);
+    display: block;
+    border-radius: 1.5em;
+    width: 1.5em;
+    height: 1.5em;
+    position: absolute;
+    transition: ease-in 0.3s;
+}
+
+.circle::before{
+    content: " ";
+    background-color: rgb(52, 54, 76);
+    display: block;
+    border-radius: 1.5em;
+    width: 1.5em;
+    height: 1.5em;
+    position: absolute;
+    transition: ease-in 0.3s;
+}
+
+.pass-button:hover .circle::after{
+    transform: translateX(-55px);
+}
+
+.pass-button:hover .circle::before{
+    transform: translateX(55px);
+}
+
+.surrender-button:hover .circle::after{
+    transform: translateX(-55px);
+}
+
+.surrender-button:hover .circle::before{
+    transform: translateX(55px);
 }
 
 
@@ -86,7 +144,7 @@ html{
     padding-left: 1.2em;
     font-size: 24px;
     font-weight: 500;
-    border-radius: 0.9em;
+    border-radius: 1.5em;
     border: none;
     letter-spacing: 0.05em;
     display: flex;
@@ -110,7 +168,7 @@ html{
     justify-content: center;
     height: 2.2em;
     width: 2.2em;
-    border-radius: 0.7em;
+    border-radius: 1.6em;
     box-shadow: 0.1em 0.1em 0.6em 0.2em rgb(34, 35, 49);
     right: 0.3em;
     transition: all 0.3s;
@@ -152,6 +210,30 @@ html{
     transition: ease-in 0.3s;
 }
 
+.play-again-button{
+    font-family: 'bebas';
+    color:white;
+    background-color: rgb(52, 54, 76);
+    border: none;
+    border-radius: 15px;
+    margin-top: 3rem;
+    display: block;
+    position: absolute;
+    padding: 20px;
+    font-size: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    box-shadow: 0 0 20px rgb(52, 54, 76);
+    transition: ease-in 0.3s;
+}
+
+.play-again-button:hover{
+    background-color: white;
+    color:rgb(52, 54, 76);
+}
+
 
 /*############ Navigatie ##############*/
 
@@ -169,7 +251,8 @@ html{
     background: rgb(183, 192, 216);
     border-radius: 5rem;
     padding: 0;
-    height: 70px;
+    height: 100px;
+    box-shadow: 0 8px 20px rgb(52, 54, 76);
 }
 
 .menu-ul .menu-link{
@@ -187,8 +270,8 @@ html{
 
 .menu-home{
     list-style-type: none;
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     background-color:rgb(52, 54, 76);
     border-radius: 50%;
     display: flex;
@@ -202,18 +285,19 @@ html{
 }
 
 .home-icon{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     transition-duration: .3s;
+    margin: 10px 0 0 9px;
 }
 
 .home-icon path{
     fill: white;
-    transform: scale(1.5);
+    transform: scale(2);
 }
 
 .menu-home:hover{
-    width: 140px;
+    width: 160px;
     border-radius: 50px;
     transition-duration: .3s;
     align-items: center;
@@ -226,17 +310,18 @@ html{
 
 .menu-home::before{
     position: absolute;
-    top: -20px;
+    top: -10px;
     content: "Home";
     color: white;
     transition-duration: .3s;
-    font-size: 20px;
+    font-size: 10px;
     opacity: 0;
 }
 
 .menu-home:hover::before{
     opacity: 1;
     transform: translateY(30px);
+    font-size: 25px;
     transition-duration: .3s;
 }
 
@@ -245,8 +330,8 @@ html{
 
 .menu-go{
     list-style-type: none;
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     background-color:rgb(52, 54, 76);
     border-radius: 50%;
     display: flex;
@@ -260,24 +345,24 @@ html{
 }
 
 .go-icon{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     transition-duration: .3s;
-    margin: 2px 1.5px 0 0;
+    margin: 3.4px 0px 0 2.3px;
 }
 
 .go-icon path{
     fill: white;
-    transform: scale(1.3);
+    transform: scale(2);
 }
 
 .go-icon circle{
     fill: white;
-    transform: scale(1.3);
+    transform: scale(2);
 }
 
 .menu-go:hover{
-    width: 140px;
+    width: 160px;
     border-radius: 50px;
     transition-duration: .3s;
     align-items: center;
@@ -290,7 +375,7 @@ html{
 
 .menu-go::before{
     position: absolute;
-    top: -20px;
+    top: -10px;
     content: "Play Now";
     color: white;
     transition-duration: .3s;
@@ -300,7 +385,7 @@ html{
 
 .menu-go:hover::before{
     opacity: 1;
-    font-size: 20px;
+    font-size: 25px;
     transform: translateY(30px);
     transition-duration: .3s;
 }
@@ -310,8 +395,8 @@ html{
 
 .menu-about{
     list-style-type: none;
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     background-color:rgb(52, 54, 76);
     border-radius: 50%;
     display: flex;
@@ -325,24 +410,24 @@ html{
 }
 
 .about-icon{
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     transition-duration: .3s;
-    margin: 2px 1.5px 0 0;
+    margin: 4px 0 0 1.5px;
 }
 
 .about-icon path{
     fill: white;
-    transform: scale(1.3);
+    transform: scale(2);
 }
 
 .about-icon circle{
     fill: white;
-    transform: scale(1.3);
+    transform: scale(2);
 }
 
 .menu-about:hover{
-    width: 140px;
+    width: 160px;
     border-radius: 50px;
     transition-duration: .3s;
     align-items: center;
@@ -355,7 +440,7 @@ html{
 
 .menu-about::before{
     position: absolute;
-    top: -20px;
+    top: -10px;
     content: "Rules";
     color: white;
     transition-duration: .3s;
@@ -365,7 +450,7 @@ html{
 
 .menu-about:hover::before{
     opacity: 1;
-    font-size: 20px;
+    font-size: 25px;
     transform: translateY(30px);
     transition-duration: .3s;
 }

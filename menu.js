@@ -5,8 +5,10 @@ const gameCanvas = document.querySelector(".game-container")
 const playNow = document.getElementById("playNowBtn")
 const pass = document.querySelector(".pass-button")
 const home = document.querySelector(".menu-home")
+const surrender = document.querySelector(".surrender-button")
  
 let game
+let isGameStarted = false
 
 function showGame(){
     gameCanvas.style.display = 'block'
@@ -22,7 +24,10 @@ function showHome(){
 
 function startGame(){
     showGame()
-    game = initializeGame()
+    if(!isGameStarted){
+        game = initializeGame()
+        isGameStarted = true
+    }
 }
 
 playNow.addEventListener("click", function(event){
@@ -37,6 +42,13 @@ pass.addEventListener("click", function(event){
     }
 })
 
+
+surrender.addEventListener("click", function(event){
+    event.preventDefault()
+    if(game){
+        game.showSurrPass()
+    }
+})
 
 home.addEventListener("click", function(event){
     event.preventDefault()

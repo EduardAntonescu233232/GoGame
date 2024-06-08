@@ -8,7 +8,8 @@ function initializeGame(){
     const boardSize = 5
     let isGameOver = false
     let currentPlayerType = "human"
-    
+    const passButton = document.querySelector(".pass-button")
+    const surrButton = document.querySelector(".surrender-button")
 
     function resizeCanvas(){
         const windowWidth = window.innerWidth
@@ -63,7 +64,7 @@ function initializeGame(){
     }
 
 
-    const stones = []
+    let stones = []
     let currentPlayer = "rgb(52, 54, 76)"
     updateBoard();
     class Stone{
@@ -262,7 +263,7 @@ function initializeGame(){
                 setTimeout(() => {
                     currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
                     currentPlayerType = "human";
-                }, 4000);
+                }, 2000);
             }
         } else {
             showSurePass();
@@ -298,6 +299,61 @@ function initializeGame(){
                 }, 1000);
             }
         }
+    }
+
+    function showSurrPass(){
+        const gameContainer = document.querySelector('.game-container')
+        canvas.style.filter = 'blur(10px)'
+        const surrMessage = document.createElement('div')
+        surrMessage.textContent = "Are you sure you want to surrender?"
+        surrMessage.style.position = 'absolute'
+        surrMessage.style.top = '50%'
+        surrMessage.style.left = '50%'
+        surrMessage.style.transform = 'translate(-50%, -50%)'
+        surrMessage.style.marginTop = '-3.5rem'
+        surrMessage.style.backgroundColor = 'rgba(52, 54, 76, 0.6)'
+        surrMessage.style.color = 'white'
+        surrMessage.style.padding = '20px'
+        surrMessage.style.fontSize = '2rem'
+        surrMessage.style.textAlign = 'center'
+        surrMessage.style.borderRadius = '25px'
+        surrMessage.style.zIndex = '999'
+        surrMessage.style.opacity = '0'
+        surrMessage.style.transition = 'ease-in 0.3s'
+
+        const buttonContainer = document.createElement('div')
+        buttonContainer.style.marginTop = '20px'
+
+        const yesButton = document.createElement('button')
+        yesButton.textContent = "Yes"
+        yesButton.classList.add('yes-button')
+        yesButton.addEventListener('click', () => {
+            surrMessage.style.opacity = '0'
+            gameContainer.removeChild(surrMessage)
+            canvas.style.filter = 'blur(0px)'
+            endGame()
+        })
+
+
+        const noButton = document.createElement('button')
+        noButton.textContent = "No";
+        noButton.classList.add('no-button')
+        noButton.addEventListener('click', () => {
+            surrMessage.style.opacity = '0'
+            gameContainer.removeChild(surrMessage);
+            canvas.style.filter = 'blur(0px)'
+        });
+        buttonContainer.appendChild(yesButton)
+        buttonContainer.appendChild(noButton)
+        surrMessage.appendChild(buttonContainer)
+        
+        setTimeout(() =>{
+            gameContainer.appendChild(surrMessage)
+            setTimeout(() =>{
+                surrMessage.style.opacity = '1'
+            }, 100)
+        }, 300)
+        
     }
 
     function showSurePass(){
@@ -338,7 +394,6 @@ function initializeGame(){
         noButton.textContent = "No";
         noButton.classList.add('no-button')
         noButton.addEventListener('click', () => {
-           
             sureMessage.style.opacity = '0'
             gameContainer.removeChild(sureMessage);
             canvas.style.filter = 'blur(0px)'
@@ -356,6 +411,8 @@ function initializeGame(){
         
     }
 
+    
+
     function showPassMessage(message){
         const passMessage = document.createElement('div')
         passMessage.textContent = message
@@ -363,7 +420,7 @@ function initializeGame(){
         passMessage.style.top = '50%'
         passMessage.style.left = '50%'
         passMessage.style.transform = 'translate(-50%, -50%)'
-        passMessage.style.marginTop = '-2.5rem'
+        passMessage.style.marginTop = '-3rem'
         passMessage.style.backgroundColor = 'rgba(52, 54, 76, 0.8)'
         passMessage.style.color = 'white'
         passMessage.style.padding = '20px'
@@ -414,20 +471,42 @@ function initializeGame(){
 
     function showGameOver(blackScore, whiteScore){
         drawBackground()
-
+        const gameContainer = document.querySelector(".game-container")
+        const humanScore = blackScore - whiteScore
+        const AIScore = whiteScore - blackScore
         c.fillStyle = "rgb(52, 54, 76)"
-        c.font = "2rem 'bebas'"
+        c.font = "3rem 'bebas'"
         c.textAlign = "center"
         c.fillText("Game Over", canvasSize / 2 , canvasSize / 2 - 70)
 
-        c.font = "1.5rem 'bebas'"
+        c.font = "2rem 'bebas'"
         if(blackScore > whiteScore){
-            c.fillText(`You won by ${blackScore - whiteScore} points!`, canvasSize / 2, canvasSize / 2)
+            c.fillText(`You won by ${humanScore} points!`, canvasSize / 2, canvasSize / 2)
         }
         else{
-            c.fillText(`PsyGOpath won by ${whiteScore - blackScore} points!`, canvasSize / 2, canvasSize / 2)
+            c.fillText(`PsyGOpath won by ${AIScore} points!`, canvasSize / 2, canvasSize / 2)
         }
+
+        const playAgain = document.createElement('button')
+        playAgain.classList.add('play-again-button')
+        playAgain.textContent = "Play Again"
+        gameContainer.appendChild(playAgain)
         isGameOver = true
+        passButton.style.display = 'none'
+        surrButton.style.display = 'none'
+        playAgain.addEventListener('click', () => {
+            isGameOver = false
+            drawBackground()
+            drawBoard()
+            stones = []
+            gameContainer.removeChild(playAgain)
+            passButton.style.display = 'flex'
+            surrButton.style.display = 'flex'
+            blackScore = 0
+            whiteScore = 0
+        })
+
+        return isGameOver
     }
 
     function handleClick(event){
@@ -750,7 +829,9 @@ function initializeGame(){
 
     return{
         initializeGame: initializeGame,
-        handlePass: handlePass
+        handlePass: handlePass,
+        showSurrPass: showSurrPass,
+        showGameOver: showGameOver
     }
     
 }
