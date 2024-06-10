@@ -496,27 +496,34 @@ function initializeGame(){
     }
 
     function showGameOver(blackScore, whiteScore){
-        drawBackground()
         const gameContainer = document.querySelector(".game-container")
+        const gameOverScreen = document.createElement('div')
+        const gameOverScreenText = document.createElement('h1');
+        gameOverScreen.classList.add('game-over-screen')
+        gameOverScreen.textContent = "Game Over"
+
+        const canvas = document.getElementById('canvas')
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        gameOverScreen.style.width = `${canvasWidth}px`;
+        gameOverScreen.style.height = `${canvasHeight}px`;
+
         const humanScore = blackScore - whiteScore
         const AIScore = whiteScore - blackScore
-        c.fillStyle = "rgb(52, 54, 76)"
-        c.font = "3rem 'bebas'"
-        c.textAlign = "center"
-        c.fillText("Game Over", canvasSize / 2 , canvasSize / 2 - 70)
-
-        c.font = "2rem 'bebas'"
         if(blackScore > whiteScore){
-            c.fillText(`You won by ${humanScore} points!`, canvasSize / 2, canvasSize / 2)
+            gameOverScreenText.textContent = `You won by ${humanScore} points!`;
         }
         else{
-            c.fillText(`PsyGOpath won by ${AIScore} points!`, canvasSize / 2, canvasSize / 2)
-        }
+            gameOverScreenText.textContent = `PsyGOpath won by ${AIScore} points!`;
 
+        }
         const playAgain = document.createElement('button')
         playAgain.classList.add('play-again-button')
         playAgain.textContent = "Play Again"
-        gameContainer.appendChild(playAgain)
+        gameOverScreen.appendChild(gameOverScreenText);
+        gameOverScreen.appendChild(playAgain)
+        gameContainer.appendChild(gameOverScreen)
         isGameOver = true
         passButton.style.display = 'none'
         surrButton.style.display = 'none'
@@ -525,7 +532,8 @@ function initializeGame(){
             drawBackground()
             drawBoard()
             stones = []
-            gameContainer.removeChild(playAgain)
+            gameOverScreen.style.display = 'none';
+            gameOverScreen.removeChild(playAgain)
             passButton.style.display = 'flex'
             surrButton.style.display = 'flex'
             blackScore = 0

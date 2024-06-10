@@ -1,3 +1,5 @@
+
+
 .blur{
     filter: blur(5px);
 }
@@ -216,7 +218,6 @@ body{
     background-color: rgb(52, 54, 76);
     border: none;
     border-radius: 15px;
-    margin-top: 3rem;
     display: block;
     position: absolute;
     padding: 20px;
@@ -227,6 +228,7 @@ body{
     cursor: pointer;
     box-shadow: 0 0 20px rgb(52, 54, 76);
     transition: ease-in 0.3s;
+    margin-top: 6rem;
 }
 
 .play-again-button:hover{
@@ -234,6 +236,25 @@ body{
     color:rgb(52, 54, 76);
 }
 
+
+.game-over-screen{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: rgb(52, 54, 76);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    background-color: rgb(183, 192, 216);
+    border-radius: 5rem;
+}
+
+.game-over-screen h1{
+    font-size: 1.5rem;
+}
 
 /*############ Navigatie ##############*/
 
