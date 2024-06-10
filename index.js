@@ -201,55 +201,81 @@ function initializeGame(){
         
     }
 
-    function calculateTerritory(){
+    function calculateTerritory() {
         const territory = {
             black: new Set(),
             white: new Set(),
             neutral: new Set()
-        }
-
-        function fill(x, y, color, visited){
-            const key = `${x}, ${y}`
-            if(visited.has(key)){
-                return true
-            }
-            if(x < 0 || x >= boardSize || y < 0 || y >= boardSize){
-                return true
-            }
-
-            const stone = getStone(x, y)
-            if(stone){
-                return stone.color === color
-            }
-
-            visited.add(key)
-            const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
-            let surrounded = true
-            for(let [dx, dy] of directions){
-                if(!fill(x + dx, y + dy, color, visited)){
-                    surrounded = false
+        };
+    
+        function isSurrounded(x, y, color, visited) {
+            const key = `${x},${y}`;
+            if (visited.has(key)) return true;
+    
+            visited.add(key);
+    
+            if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) return false;
+    
+            const stone = getStone(x, y);
+            if (stone) return stone.color === color;
+    
+            const neighbors = getNeighbors(x, y);
+            let surrounded = true;
+            for (let neighbor of neighbors) {
+                if (!isSurrounded(neighbor.x, neighbor.y, color, visited)) {
+                    surrounded = false;
                 }
             }
-
-            if(surrounded){
-                territory[color === "rgb(52, 54, 76)" ? "black" : "white"].add(key)
-            }
-            else{
-                territory.neutral.add(key)
-            }
-            return surrounded
+            return surrounded;
         }
-
-        for(let x = 0; x < boardSize; x++){
-            for(let y = 0; y < boardSize; y++){
-                if(!getStone(x, y) && !territory.black.has(`${x}, ${y}`) && !territory.white.has(`${x}, ${y}`) && !territory.neutral.has(`${x}, ${y}`)){
-                    fill(x, y, "rgb(52, 54, 76)", new Set()); 
-                    fill(x, y, "rgb(232, 237, 249)", new Set());
+    
+        function exploreTerritory(x, y, visited) {
+            const queue = [{ x, y }];
+            const points = new Set();
+            let isBlackSurrounded = true;
+            let isWhiteSurrounded = true;
+    
+            while (queue.length > 0) {
+                const { x, y } = queue.shift();
+                const key = `${x},${y}`;
+    
+                if (visited.has(key) || x < 0 || x >= boardSize || y < 0 || y >= boardSize) continue;
+    
+                const stone = getStone(x, y);
+                if (stone) {
+                    if (stone.color === "rgb(52, 54, 76)") isWhiteSurrounded = false;
+                    if (stone.color === "rgb(232, 237, 249)") isBlackSurrounded = false;
+                    continue;
+                }
+    
+                visited.add(key);
+                points.add(key);
+    
+                const neighbors = getNeighbors(x, y);
+                for (let neighbor of neighbors) {
+                    queue.push(neighbor);
+                }
+            }
+    
+            if (isBlackSurrounded && !isWhiteSurrounded) {
+                points.forEach(point => territory.black.add(point));
+            } else if (isWhiteSurrounded && !isBlackSurrounded) {
+                points.forEach(point => territory.white.add(point));
+            } else {
+                points.forEach(point => territory.neutral.add(point));
+            }
+        }
+    
+        const visited = new Set();
+        for (let x = 0; x < boardSize; x++) {
+            for (let y = 0; y < boardSize; y++) {
+                const key = `${x},${y}`;
+                if (!visited.has(key) && !getStone(x, y)) {
+                    exploreTerritory(x, y, visited);
                 }
             }
         }
-
-        return territory
+        return territory;
     }
 
     function handlePass() {
@@ -544,13 +570,31 @@ function initializeGame(){
         const move = mcts.run(state, 1000); 
         
         if (move) {
-            addStone(move.x, move.y);
-            updateBoard();
-            currentPlayerType = "human";
-            return true
+            const testState = state.clone();
+            testState.play(move);
+            const currentScore = state.evaluateScore();
+            const newScore = testState.evaluateScore();
+    
+            if (newScore >= currentScore || state.moveCount > (state.boardSize * state.boardSize) * 0.8) {
+                if (!move.pass) {
+                    
+                    addStone(move.x, move.y);
+                    updateBoard();
+                    currentPlayerType = "human";
+                    return true;
+                } else {
+                    handlePass();
+                    return false;
+                }
+            } else {
+                addStone(move.x, move.y);
+                updateBoard();
+                currentPlayerType = "human";
+                return true;
+            }
         } else {
             handlePass();
-            return false
+            return false;
         }
     }
 
@@ -610,54 +654,53 @@ function initializeGame(){
     }
 
 
-    class MCTS{
+    class MCTS {
         constructor(game) {
             this.game = game;
         }
-
+    
         run(state, timeLimit) {
             const rootNode = new MCTSNode(state);
-            const startTime = Date.now()
-            let iterations = 0
-            let maxIterations = 500
-            while(Date.now() - startTime < timeLimit && iterations < maxIterations){
-                for (let i = 0; i < iterations; i++) {
-                    let node = rootNode;
-                    let simulationState = state.clone();
-        
-                    // Selection
-                    while (node.children.length > 0) {
-                        node = node.select();
-                        simulationState.play(node.move);
-                    }
-        
-                    // Expansion
-                    const moves = simulationState.getValidMoves();
-                    if (moves.length > 0) {
-                        node.expand(moves);
-                        node = node.children[Math.floor(Math.random() * node.children.length)];
-                        simulationState.play(node.move);
-                    }
-        
-                    // Simulation
-                    while (!simulationState.isGameOver()) {
-                        const moves = simulationState.getValidMoves();
-                        const passResult = simulationState.getResult(state.currentPlayer)
-                        if(moves.length === 0 || passResult >= 0.5){
-                            break
-                        }
-                        const randomMove = moves[Math.floor(Math.random() * moves.length)];
-                        simulationState.play(randomMove);
-                    }
-        
-                    // Backpropagation
-                    const result = simulationState.getResult(state.currentPlayer);
-                    node.backpropagate(result);
+            const startTime = Date.now();
+            let iterations = 0;
+            const maxIterations = 300;
+    
+            while (Date.now() - startTime < timeLimit && iterations < maxIterations) {
+                let node = rootNode;
+                let simulationState = state.clone();
+    
+                // Selection
+                while (node.children.length > 0) {
+                    node = node.select();
+                    simulationState.play(node.move);
                 }
-
-                iterations++
+    
+                // Expansion
+                const moves = simulationState.getValidMoves();
+                if (moves.length > 0) {
+                    node.expand(moves);
+                    node = node.children.sort((a, b) => b.state.heuristic(b.move) - a.state.heuristic(a.move))[0];
+                    simulationState.play(node.move);
+                }
+    
+                // Simulation
+                while (!simulationState.isGameOver()) {
+                    const moves = simulationState.getValidMoves();
+                    if (moves.length === 0) {
+                        break;
+                    }
+    
+                    const futureMove = this.simulateFutureMoves(simulationState)
+                    simulationState.play(futureMove);
+                }
+    
+                // Backpropagation
+                const result = simulationState.getResult(state.currentPlayer);
+                node.backpropagate(result);
+    
+                iterations++;
             }
-
+    
             let bestMove = null;
             let bestVisits = -Infinity;
             for (const child of rootNode.children) {
@@ -668,17 +711,39 @@ function initializeGame(){
             }
             return bestMove;
         }
+
+        simulateFutureMoves(state){
+            const validMoves = state.getValidMoves()
+            let bestMove = validMoves[0]
+            let bestScore = -Infinity
+
+            for(const move of validMoves){
+                const testState = state.clone()
+                testState.play(move)
+
+                const score = testState.evaluateScore()
+                const capturedStones = testState.captureStones().length
+                const totalScore = score + capturedStones * 30
+                if(totalScore > bestScore){
+                    bestScore = totalScore
+                    bestMove = move
+                }
+            }
+
+            return bestMove
+        }
     }
 
     class GameState{
         constructor(boardSize, stones, currentPlayer) {
             this.boardSize = boardSize;
-            this.stones = stones;
+            this.stones = stones.map(stone => new Stone(stone.x, stone.y, stone.color));
             this.currentPlayer = currentPlayer;
+            this.moveCount = stones.length
         }
 
         clone() {
-            return new GameState(this.boardSize, [...this.stones], this.currentPlayer);
+            return new GameState(this.boardSize, this.stones, this.currentPlayer);
         }
 
         play(move) {
@@ -771,7 +836,7 @@ function initializeGame(){
                     }
                 }
             }
-            return validMoves;
+            return validMoves.sort((a, b) => this.heuristic(b) - this.heuristic(a)).slice(0, 10);
         }
 
         isGameOver() {
@@ -815,6 +880,89 @@ function initializeGame(){
                 neighbors.push({ x: x, y: y + 1 });
             }
             return neighbors;
+        }
+
+        heuristic(move){
+            const testState = this.clone()
+            testState.play(move)
+
+            const currentScore = this.evaluateScore()
+            const newScore = testState.evaluateScore()
+
+            let scoreDifference = newScore - currentScore
+
+            const capturedStones = testState.captureStones().length
+            scoreDifference += capturedStones * 50
+
+            if(testState.isFillingOwnTerritory(move)){
+                scoreDifference -= 100
+            }
+
+            // const center = this.boardSize / 2
+            // const distanceToCenter = Math.sqrt(Math.pow(move.x - center, 2) + Math.pow(move.y - center, 2))
+            // scoreDifference -= distanceToCenter * 2
+
+            const liberties = testState.calculateLiberties(new Stone(move.x, move.y, this.currentPlayer)).size
+            if(liberties < 2){
+                scoreDifference -= 50
+            }
+
+            const neighbors = this.getNeighbors(move.x, move.y)
+            let allyNeighbors = 0 
+            for(const neighbor of neighbors){
+                const neighborStone = this.getStone(neighbor.x, neighbor.y)
+                if(neighborStone && neighborStone.color === this.currentPlayer){
+                    allyNeighbors++
+                }
+            }
+            
+            scoreDifference += allyNeighbors * 10
+
+            const isMoveAtRisk = this.isMoveAtRisk(move, this.currentPlayer)
+            if(isMoveAtRisk){
+                scoreDifference -= 100
+            }
+
+
+            if(move.pass && this.moveCount < (this.boardSize * this.boardSize) / 2){
+                scoreDifference -= 100
+            }
+            return scoreDifference
+        }
+
+        isMoveAtRisk(move, playerColor){
+            const testState = this.clone()
+            testState.play(move)
+
+            const stone = testState.getStone(move.x, move.y)
+            const liberties = testState.calculateLiberties(stone).size
+
+            if(liberties < 2){
+                return true
+            }
+
+            return false
+        }
+
+        isFillingOwnTerritory(move){
+            const territory = calculateTerritory();
+            const key = `${move.x},${move.y}`;
+
+            if (this.currentPlayer === "rgb(52, 54, 76)" && territory.black.has(key)) {
+                return true;
+            }
+            if (this.currentPlayer === "rgb(232, 237, 249)" && territory.white.has(key)) {
+                return true;
+            }
+            return false;
+        }
+
+        evaluateScore(){
+            const territories = calculateTerritory()
+            const blackScore = blackCapturedStones + territories.black.size
+            const whiteScore = whiteCapturedStones + territories.white.size + 6.5
+
+            return this.currentPlayer === "rgb(52, 54, 76)" ? blackScore : whiteScore
         }
     }
 
