@@ -10,7 +10,8 @@ function initializeGame(){
     let currentPlayerType = "human"
     const passButton = document.querySelector(".pass-button")
     const surrButton = document.querySelector(".surrender-button")
-
+    let currentScore
+    let newScore
     function resizeCanvas(){
         const windowWidth = window.innerWidth
         const windowHeight = window.innerHeight
@@ -532,12 +533,16 @@ function initializeGame(){
             drawBackground()
             drawBoard()
             stones = []
+            currentScore = 0
+            newScore = 6.5
             gameOverScreen.style.display = 'none';
             gameOverScreen.removeChild(playAgain)
             passButton.style.display = 'flex'
             surrButton.style.display = 'flex'
             blackScore = 0
             whiteScore = 0
+            currentPlayerType = "human"
+            currentPlayer = "rgb(52, 54, 76)"
         })
 
         return isGameOver
@@ -575,36 +580,37 @@ function initializeGame(){
 
         const state = new GameState(boardSize, stones, currentPlayer);
         const mcts = new MCTS();
-        const move = mcts.run(state, 1000); 
+        const move = mcts.run(state, 1000);
         
         if (move) {
-            const testState = state.clone();
-            testState.play(move);
-            const currentScore = state.evaluateScore();
-            const newScore = testState.evaluateScore();
-    
-            if (newScore >= currentScore || state.moveCount > (state.boardSize * state.boardSize) * 0.8) {
-                if (!move.pass) {
-                    
-                    addStone(move.x, move.y);
-                    updateBoard();
+            console.log("AI selected move:", move);
+            currentScore = state.evaluateScore();
+            console.log(`Current Score: ${currentScore}`);
+
+            if(!move.pass){
+                addStone(move.x, move.y)
+                newScore = state.evaluateScore(move)
+                console.log(`NewScore: ${newScore}`)
+                if (newScore >= currentScore || state.moveCount <= (state.boardSize * state.boardSize) * 0.8) {
+                    updateBoard()
                     currentPlayerType = "human";
                     return true;
                 } else {
+                    stones.pop()
+                    updateBoard()
                     handlePass();
                     return false;
                 }
             } else {
-                addStone(move.x, move.y);
-                updateBoard();
-                currentPlayerType = "human";
-                return true;
+                handlePass()
+                return false
             }
-        } else {
-            handlePass();
-            return false;
+        } else{
+            handlePass()
+            return false
         }
     }
+
 
 
 
@@ -672,27 +678,31 @@ function initializeGame(){
             const startTime = Date.now();
             let iterations = 0;
             const maxIterations = 300;
+            const maxDepth = 10
     
             while (Date.now() - startTime < timeLimit && iterations < maxIterations) {
                 let node = rootNode;
                 let simulationState = state.clone();
+                let depth = 0
     
                 // Selection
-                while (node.children.length > 0) {
+                while (node.children.length > 0 && depth < maxDepth) {
                     node = node.select();
                     simulationState.play(node.move);
+                    depth++
                 }
     
                 // Expansion
                 const moves = simulationState.getValidMoves();
-                if (moves.length > 0) {
+                if (moves.length > 0 && depth < maxDepth) {
                     node.expand(moves);
                     node = node.children.sort((a, b) => b.state.heuristic(b.move) - a.state.heuristic(a.move))[0];
                     simulationState.play(node.move);
+                    depth++
                 }
     
                 // Simulation
-                while (!simulationState.isGameOver()) {
+                while (!simulationState.isGameOver() && depth < maxDepth) {
                     const moves = simulationState.getValidMoves();
                     if (moves.length === 0) {
                         break;
@@ -700,6 +710,7 @@ function initializeGame(){
     
                     const futureMove = this.simulateFutureMoves(simulationState)
                     simulationState.play(futureMove);
+                    depth++
                 }
     
                 // Backpropagation
@@ -722,6 +733,9 @@ function initializeGame(){
 
         simulateFutureMoves(state){
             const validMoves = state.getValidMoves()
+            if(validMoves.length === 0){
+                return null
+            }
             let bestMove = validMoves[0]
             let bestScore = -Infinity
 
@@ -758,8 +772,14 @@ function initializeGame(){
             if (this.isEmpty(move.x, move.y)) {
                 const stone = new Stone(move.x, move.y, this.currentPlayer);
                 this.stones.push(stone);
-                this.captureStones();
-                this.currentPlayer = this.currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
+                const capturedStones = this.captureStones();
+
+                if(this.calculateLiberties(stone).size === 0){
+                    this.stones.pop()
+                }
+                else{
+                    this.currentPlayer = this.currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
+                }
             }
         }
 
@@ -819,8 +839,8 @@ function initializeGame(){
             }
         }
 
-        dfs(stone.x, stone.y)
-        return liberties
+            dfs(stone.x, stone.y)
+            return liberties
         }
 
         getValidMoves() {
@@ -899,20 +919,16 @@ function initializeGame(){
 
             let scoreDifference = newScore - currentScore
 
-            const capturedStones = testState.captureStones().length
-            scoreDifference += capturedStones * 50
-
             if(testState.isFillingOwnTerritory(move)){
-                scoreDifference -= 100
+                scoreDifference -= 1000
             }
 
-            // const center = this.boardSize / 2
-            // const distanceToCenter = Math.sqrt(Math.pow(move.x - center, 2) + Math.pow(move.y - center, 2))
-            // scoreDifference -= distanceToCenter * 2
+            const capturedStones = testState.captureStones().length
+            scoreDifference += capturedStones * 1000
 
             const liberties = testState.calculateLiberties(new Stone(move.x, move.y, this.currentPlayer)).size
             if(liberties < 2){
-                scoreDifference -= 50
+                scoreDifference -= 100
             }
 
             const neighbors = this.getNeighbors(move.x, move.y)
@@ -935,6 +951,11 @@ function initializeGame(){
             if(move.pass && this.moveCount < (this.boardSize * this.boardSize) / 2){
                 scoreDifference -= 100
             }
+
+            if(scoreDifference <= 0 && this.moveCount > (this.boardSize * this.boardSize) * 0.8){
+                scoreDifference -= 100;
+            }
+
             return scoreDifference
         }
 
@@ -943,6 +964,9 @@ function initializeGame(){
             testState.play(move)
 
             const stone = testState.getStone(move.x, move.y)
+            if(!stone){
+                return false
+            }
             const liberties = testState.calculateLiberties(stone).size
 
             if(liberties < 2){
@@ -967,10 +991,9 @@ function initializeGame(){
 
         evaluateScore(){
             const territories = calculateTerritory()
-            const blackScore = blackCapturedStones + territories.black.size
-            const whiteScore = whiteCapturedStones + territories.white.size + 6.5
+            const whiteScore = blackCapturedStones + territories.white.size + 6.5
 
-            return this.currentPlayer === "rgb(52, 54, 76)" ? blackScore : whiteScore
+            return whiteScore
         }
     }
 
