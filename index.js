@@ -124,6 +124,7 @@ function initializeGame(){
             console.log(capturedStones)
             if(calculateLiberties(stone).size > 0){
                 stone.draw()
+                currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)";
             }
             else if(calculateLiberties(stone).size === 0){
                 stones.pop()
@@ -134,9 +135,7 @@ function initializeGame(){
                     return
                 }
             } 
-            if(getStone(x, y)){
-                currentPlayer = currentPlayer === "rgb(52, 54, 76)" ? "rgb(232, 237, 249)" : "rgb(52, 54, 76)" 
-            } 
+            updateBoard()
         } else {
             return 
         } 
@@ -584,30 +583,18 @@ function initializeGame(){
         
         if (move) {
             console.log("AI selected move:", move);
-            currentScore = state.evaluateScore();
-            console.log(`Current Score: ${currentScore}`);
-
-            if(!move.pass){
-                addStone(move.x, move.y)
-                newScore = state.evaluateScore(move)
-                console.log(`NewScore: ${newScore}`)
-                if (newScore >= currentScore || state.moveCount <= (state.boardSize * state.boardSize) * 0.8) {
-                    updateBoard()
-                    currentPlayerType = "human";
-                    return true;
-                } else {
-                    stones.pop()
-                    updateBoard()
-                    handlePass();
-                    return false;
-                }
-            } else {
-                handlePass()
-                return false
-            }
-        } else{
-            handlePass()
-            return false
+            addStone(move.x, move.y);
+            const { blackScore, whiteScore } = state.evaluateScore();
+    
+            const currentScore = currentPlayer === "rgb(52, 54, 76)" ? blackScore : whiteScore;
+    
+            console.log(`New Score: Black ${blackScore}, White ${whiteScore}`);
+    
+            currentPlayerType = "human";
+            return true;
+        } else {
+            handlePass();
+            return false;
         }
     }
 
@@ -743,12 +730,13 @@ function initializeGame(){
                 const testState = state.clone()
                 testState.play(move)
 
-                const score = testState.evaluateScore()
-                const capturedStones = testState.captureStones().length
-                const totalScore = score + capturedStones * 30
-                if(totalScore > bestScore){
-                    bestScore = totalScore
-                    bestMove = move
+                const score = state.currentPlayer === "rgb(52, 54, 76)"
+                    ? testState.evaluateScore().blackScore
+                    : testState.evaluateScore().whiteScore;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = move;
                 }
             }
 
@@ -761,11 +749,16 @@ function initializeGame(){
             this.boardSize = boardSize;
             this.stones = stones.map(stone => new Stone(stone.x, stone.y, stone.color));
             this.currentPlayer = currentPlayer;
-            this.moveCount = stones.length
+            this.moveCount = stones.length;
+            this.blackCapturedStones = 0;
+            this.whiteCapturedStones = 0;
         }
 
         clone() {
-            return new GameState(this.boardSize, this.stones, this.currentPlayer);
+            const clonedState = new GameState(this.boardSize, this.stones, this.currentPlayer);
+            clonedState.blackCapturedStones = this.blackCapturedStones;
+            clonedState.whiteCapturedStones = this.whiteCapturedStones;
+            return clonedState;
         }
 
         play(move) {
@@ -798,6 +791,12 @@ function initializeGame(){
                 const liberties = this.calculateLiberties(stone);
                 if (liberties.size === 0 && stone.color !== this.currentPlayer) {
                     capturedStones.push(stone);
+                    if(stone.color === "rgb(52, 54, 76)"){
+                        this.blackCapturedStones++;
+                    }
+                    else{
+                        this.whiteCapturedStones++;
+                    }
                 }
             }
             for (let stone of capturedStones) {
@@ -841,6 +840,83 @@ function initializeGame(){
 
             dfs(stone.x, stone.y)
             return liberties
+        }
+
+        calculateTerritory() {
+            const territory = {
+                black: new Set(),
+                white: new Set(),
+                neutral: new Set()
+            };
+        
+            function isSurrounded(x, y, color, visited) {
+                const key = `${x},${y}`;
+                if (visited.has(key)) return true;
+        
+                visited.add(key);
+        
+                if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) return false;
+        
+                const stone = getStone(x, y);
+                if (stone) return stone.color === color;
+        
+                const neighbors = getNeighbors(x, y);
+                let surrounded = true;
+                for (let neighbor of neighbors) {
+                    if (!isSurrounded(neighbor.x, neighbor.y, color, visited)) {
+                        surrounded = false;
+                    }
+                }
+                return surrounded;
+            }
+        
+            function exploreTerritory(x, y, visited) {
+                const queue = [{ x, y }];
+                const points = new Set();
+                let isBlackSurrounded = true;
+                let isWhiteSurrounded = true;
+        
+                while (queue.length > 0) {
+                    const { x, y } = queue.shift();
+                    const key = `${x},${y}`;
+        
+                    if (visited.has(key) || x < 0 || x >= boardSize || y < 0 || y >= boardSize) continue;
+        
+                    const stone = getStone(x, y);
+                    if (stone) {
+                        if (stone.color === "rgb(52, 54, 76)") isWhiteSurrounded = false;
+                        if (stone.color === "rgb(232, 237, 249)") isBlackSurrounded = false;
+                        continue;
+                    }
+        
+                    visited.add(key);
+                    points.add(key);
+        
+                    const neighbors = getNeighbors(x, y);
+                    for (let neighbor of neighbors) {
+                        queue.push(neighbor);
+                    }
+                }
+        
+                if (isBlackSurrounded && !isWhiteSurrounded) {
+                    points.forEach(point => territory.black.add(point));
+                } else if (isWhiteSurrounded && !isBlackSurrounded) {
+                    points.forEach(point => territory.white.add(point));
+                } else {
+                    points.forEach(point => territory.neutral.add(point));
+                }
+            }
+        
+            const visited = new Set();
+            for (let x = 0; x < boardSize; x++) {
+                for (let y = 0; y < boardSize; y++) {
+                    const key = `${x},${y}`;
+                    if (!visited.has(key) && !getStone(x, y)) {
+                        exploreTerritory(x, y, visited);
+                    }
+                }
+            }
+            return territory;
         }
 
         getValidMoves() {
@@ -917,14 +993,14 @@ function initializeGame(){
             const currentScore = this.evaluateScore()
             const newScore = testState.evaluateScore()
 
-            let scoreDifference = newScore - currentScore
+            let scoreDifference = (newScore.whiteScore - currentScore.whiteScore) - (newScore.blackScore - currentScore.blackScore);
 
             if(testState.isFillingOwnTerritory(move)){
-                scoreDifference -= 1000
+                scoreDifference -= 100
             }
 
             const capturedStones = testState.captureStones().length
-            scoreDifference += capturedStones * 1000
+            scoreDifference += capturedStones * 100
 
             const liberties = testState.calculateLiberties(new Stone(move.x, move.y, this.currentPlayer)).size
             if(liberties < 2){
@@ -990,10 +1066,11 @@ function initializeGame(){
         }
 
         evaluateScore(){
-            const territories = calculateTerritory()
-            const whiteScore = blackCapturedStones + territories.white.size + 6.5
+            const territories = this.calculateTerritory()
 
-            return whiteScore
+            const whiteScore = this.blackCapturedStones + territories.white.size + 6.5
+            const blackScore = this.whiteCapturedStones + territories.black.size;
+            return { whiteScore, blackScore }
         }
     }
 
