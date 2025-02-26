@@ -1,5 +1,4 @@
 
-
 .blur{
     filter: blur(5px);
 }
@@ -23,25 +22,202 @@ body{
     padding: 0;
 }
 
+/*########## Options ###########*/
+.game-options-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 5rem;
+    background-color: rgb(183, 192, 216);
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    border-radius: 3rem;
+    box-shadow: 0 10px 20px rgb(52, 54, 76);
+}
+
+.game-options-container.active{
+    width: 50%;
+    height: auto;
+    transition: ease-out 0.7s;
+}
+
+.board-size-option{
+    min-width: 50%;
+}
+
+.board-size-option p{
+    font-size: 1.5rem;
+    margin: 3rem auto 3rem auto;
+    color:rgb(34, 35, 49);
+    text-align: center;
+    min-width: 100%;
+}
+
+.sizes-list{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    margin: auto;
+    padding: 0;
+    max-width: 60%;
+}
+
+.sizes-card{
+    width: 6rem;
+    text-align: center;
+    list-style-type: none;
+    margin: 0.5rem;
+    padding: 1rem;
+    background-color: rgb(52, 54, 76);
+    color: white;
+    border-radius: 2rem;
+    box-shadow: 0 10px 20px rgb(34, 35, 49);
+    cursor: pointer;
+    transition: ease-in 0.3s;
+}
+
+.sizes-card:hover{
+    background-color: white;
+    color: rgb(52, 54, 76);
+    transition: ease-in 0.3s;
+}
+
+.sizes-card.selected{
+    background-color: white;
+    color: rgb(52, 54, 76);
+}
+
+.bottom-cards{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.timer-option{
+    min-width: 50%;
+}
+
+.timer-option p{
+    font-size: 1.5rem;
+    margin: 2rem auto 2rem auto;
+    min-width: 100%;
+    color:rgb(34, 35, 49);
+    text-align: center;
+}
+
+.timer-option label{
+    font-size: 1.5rem;
+    color:rgb(34, 35, 49);
+    margin: 0.5rem;
+}
+
+.timer-card{
+    width: 6rem;
+    text-align: center;
+    list-style-type: none;
+    margin: 0.5rem;
+    padding: 1rem;
+    background-color: rgb(52, 54, 76);
+    color: white;
+    border-radius: 2rem;
+    box-shadow: 0 10px 20px rgb(34, 35, 49);
+    cursor: pointer;
+    transition: ease-in 0.3s;
+}
+
+.timer-card:hover{
+    background-color: white;
+    color: rgb(52, 54, 76);
+    transition: ease-in 0.3s;
+}
+
+.timer-card.selected{
+    background-color: white;
+    color: rgb(52, 54, 76);
+}
+
+.start-game-button p{
+    font-size: 1.5rem;
+    color: rgb(34, 35, 49);
+    margin: 2rem;
+}
+
+.start-game{
+    background-color: gray;
+    color: white;
+    font-family: "bebas";
+    padding: 0.5em;
+    font-size: 1.5rem;
+    font-weight: 500;
+    border-radius: 1.5em;
+    border: none;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
+    width: 10em;
+    height: 3em;
+    margin-bottom: 5rem;
+    transition: ease-in 0.3s;
+    cursor: not-allowed;
+}
+
+.start-game.enabled{
+    background-color: rgb(52, 54, 76);
+}
+
+.start-game.enabled:hover{
+    cursor: pointer;
+    background-color: white;
+    color: rgb(52, 54, 76);
+    transition: ease-in 0.3s;
+}
 
 
 /*########## Game canvas ###########*/
 
 #canvas{
-    border-radius: 5rem;
+    border-radius: 3.5rem;
     display: block;
     position: relative;
     margin: auto;
+    margin-right: 0;
     transition: ease-in 0.3s;
     box-shadow: 0 10px 20px rgb(52, 54, 76);
 }
 
+.canvas-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
 .game-container{
-    width: 70%;
     margin: auto;
     margin-top: 5rem;
+}
+
+#timer{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-left: 10vw;
     position: relative;
-    display: inline-block;
+    width: 10%;
+    align-items: center;
+    padding-right: 3rem;
+    padding-left: 3rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background-color: rgb(183, 192, 216);
+    border-radius: 2.5rem;
+    box-shadow: 0 10px 20px rgb(52, 54, 76);
+    color:rgb(52, 54, 76);
+    transition: ease-in 0.3s;
 }
 
 
@@ -51,7 +227,7 @@ body{
     font-family: "bebas";
     padding: 0.35em;
     padding-left: 1.2em;
-    font-size: 24px;
+    font-size: 15px;
     font-weight: 500;
     border-radius: 1.5em;
     border: none;
@@ -65,6 +241,8 @@ body{
     height: 2.8em;
     padding-right: 3.3em;
     cursor: pointer;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .pass-button .button-icon{
@@ -75,7 +253,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    height: 2.2em;
+    height: 2.25em;
     width: 2.2em;
     border-radius: 1.6rem;
     box-shadow: 0.1em 0.1em 0.6em 0.2em rgb(34, 35, 49);
@@ -114,19 +292,19 @@ body{
 }
 
 .pass-button:hover .circle::after{
-    transform: translateX(-55px);
+    transform: translateX(-45px);
 }
 
 .pass-button:hover .circle::before{
-    transform: translateX(55px);
+    transform: translateX(45px);
 }
 
 .surrender-button:hover .circle::after{
-    transform: translateX(-55px);
+    transform: translateX(-45px);
 }
 
 .surrender-button:hover .circle::before{
-    transform: translateX(55px);
+    transform: translateX(45px);
 }
 
 
@@ -144,7 +322,7 @@ body{
     font-family: "bebas";
     padding: 0.35em;
     padding-left: 1.2em;
-    font-size: 24px;
+    font-size: 15px;
     font-weight: 500;
     border-radius: 1.5em;
     border: none;
@@ -168,7 +346,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 2.2em;
+    height: 2.25em;
     width: 2.2em;
     border-radius: 1.6em;
     box-shadow: 0.1em 0.1em 0.6em 0.2em rgb(34, 35, 49);
@@ -182,15 +360,6 @@ body{
 
 .surrender-button:active .icon{
     transform: scale(0.95);
-}
-
-
-.game-buttons{
-    display: flex;
-    width: 80%;
-    margin: auto;
-    justify-content: space-evenly;
-    margin-top: 3rem;
 }
 
 .yes-button, .no-button{
@@ -228,7 +397,7 @@ body{
     cursor: pointer;
     box-shadow: 0 0 20px rgb(52, 54, 76);
     transition: ease-in 0.3s;
-    margin-top: 6rem;
+    margin-top: 8rem;
 }
 
 .play-again-button:hover{
@@ -236,24 +405,98 @@ body{
     color:rgb(52, 54, 76);
 }
 
-
-.game-over-screen{
-    display: flex;
-    flex-direction: column;
+.pass-message{
+    display: block;
     position: absolute;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    color: rgb(52, 54, 76);
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -55%);
-    background-color: rgb(183, 192, 216);
-    border-radius: 5rem;
+    transform: translate(-50%, -50%);
+    background-color: rgba(52, 54, 76, 0.8);
+    color: white;
+    padding: 20px;
+    font-size: 2rem;
+    text-align: center;
+    border-radius: 25px;
+    z-index: 999;
+    opacity: 0;
+    transition: ease-in 0.5s;
 }
 
-.game-over-screen h1{
-    font-size: 1.5rem;
+.sure-message{
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(52, 54, 76, 0.6);
+    color: white;
+    padding: 20px;
+    font-size: 2rem;
+    text-align: center;
+    border-radius: 25px;
+    z-index: 999;
+    opacity: 0;
+    transition: ease-in 0.3s;
+}
+
+.surr-message{
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(52, 54, 76, 0.6);
+    color: white;
+    padding: 20px;
+    font-size: 2rem;
+    text-align: center;
+    border-radius: 25px;
+    z-index: 999;
+    opacity: 0;
+    transition: ease-in 0.3s;
+}
+
+.exit-message{
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(52, 54, 76, 0.6);
+    color: white;
+    padding: 20px;
+    font-size: 2rem;
+    text-align: center;
+    border-radius: 25px;
+    z-index: 999;
+    opacity: 0;
+    transition: ease-in 0.3s;
+}
+
+.loading-screen{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    margin: auto;
+}
+
+.loading-screen-svg{
+    margin: auto;
+}
+
+.loading-screen p{
+    font-size: 3rem;
+    color:rgb(52, 54, 76);
+    margin: 0;
+    text-align: center;
 }
 
 /*############ Navigatie ##############*/
@@ -303,6 +546,18 @@ body{
     transition-duration: .3s;
     overflow: hidden;
     position: relative;
+}
+
+.menu-card.selected .menu-home{
+    background-color: white;
+}
+
+.menu-card.selected .home-icon path{
+    fill: rgb(34, 35, 49);
+}
+
+.menu-card.selected .menu-home::before{
+    color: rgb(34, 35, 49);
 }
 
 .home-icon{
@@ -363,6 +618,22 @@ body{
     transition-duration: .3s;
     overflow: hidden;
     position: relative;
+}
+
+.menu-card.selected .menu-go{
+    background-color: white;
+}
+
+.menu-card.selected .go-icon path{
+    fill: rgb(34, 35, 49);
+}
+
+.menu-card.selected .go-icon circle{
+    fill: rgb(34, 35, 49);
+}
+
+.menu-card.selected .menu-go::before{
+    color: rgb(34, 35, 49);
 }
 
 .go-icon{
@@ -430,6 +701,22 @@ body{
     position: relative;
 }
 
+.menu-card.selected .menu-about{
+    background-color: white;
+}
+
+.menu-card.selected .about-icon path{
+    fill: rgb(34, 35, 49);
+}
+
+.menu-card.selected .about-icon circle{
+    fill: rgb(34, 35, 49);
+}
+
+.menu-card.selected .menu-about::before{
+    color: rgb(34, 35, 49);
+}
+
 .about-icon{
     width: 50px;
     height: 50px;
@@ -484,99 +771,115 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 3rem;
     color:rgb(52, 54, 76);
     margin: auto;
     margin-top: 5vh;
     width: 50%;
     text-align: center;
+    text-wrap: balance
 }
 
-.main-title h2{
-    text-align: center;
-    font-size: 2rem;
-    margin: auto;
-}
-
-.main-title h3{
-    text-align: center;
-    font-size: 1.5rem;
-}
-
-
-.loader{
-    position: relative;
+.master-title{
     display: flex;
-    justify-content: space-between;
-    width: 23rem;
-    margin: auto;
-    margin-top: 6vh;
+    width: 100%;
+    align-items: center;
+}
+
+.title{
+    font-size: 10rem;
+    margin: 0;
+    padding: 5rem 0 5% 0;
+    display: inline-block;
+}
+
+.title-underline{
+    width: 0;
+    height: 1rem;
+    background:rgb(52, 54, 76);
+    margin: 0;
+    border-radius: 0.3rem;
+}
+
+.char {
+    display: inline-block;
+}
+
+.main-description{
+    margin-top: 5rem;
+    display: inline-block;
+    font-size: 2rem;
+    text-wrap: balance;
+    text-align: center;
+}
+
+.word{
+    display: inline-block;
+}
+
+.goboard-icon{
+    position: relative;
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+    margin-left: 4rem;
+}
+
+.icon-rows{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
+}
+
+.icon-columns{
+    position: absolute;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
+}
+
+.row1, .row2, .row3{
+    background:rgb(52, 54, 76);
+    width: 100%;
+    height: 15px;
+    margin: 0 auto;
+    border-radius: 0.3rem;
+    z-index: 1;
+}
+
+.col1, .col2, .col3{
+    background:rgb(52, 54, 76);
+    width: 15px;
+    height: 100%;
+    margin: auto 0;
+    border-radius: 0.3rem;
+    z-index: 1;
+}
+
+.board-stone1, .board-stone2{
+    display: block;
+    position: absolute;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    animation: eyeMove 10s infinite, blink 10s infinite;
+    transform: scale(0);
+    transform-origin: center;
+    z-index: 99;
+    box-shadow: 0px 0px 20px rgb(34, 35, 49);
 }
 
-.loader::after,
-.loader::before {
-  content: "";
-  display: inline-block;
-  width: 10rem;
-  height: 10rem;
-  background-color: white;
-  box-shadow: 0 0 20px rgb(52, 54, 76);
-  background-image: radial-gradient(circle 2.5rem, rgb(52, 54, 76) 100%, transparent 0);
-  background-repeat: no-repeat;
-  border-radius: 50%;
-  animation: eyeMove 10s infinite, blink 10s infinite;
+.board-stone1{
+    left: 65%;
+    top: 10%;
+    background-color: rgb(23, 23, 29);
 }
 
-@keyframes blink {
-    0%,
-    10%,
-    12%,
-    20%,
-    22%,
-    40%,
-    42%,
-    60%,
-    62%,
-    70%,
-    72%,
-    90%,
-    92%,
-    98%,
-    100% {
-      height: 10rem;
-    }
-    11%,
-    21%,
-    41%,
-    61%,
-    71%,
-    91%,
-    99% {
-      height: 2rem;
-    }
+.board-stone2{
+    left: 11%;
+    top: 65%;
+    background-color: white;
 }
 
-@keyframes eyeMove {
-    0%,
-    10% {
-      background-position: 0rem 0rem;
-    }
-    13%,
-    40% {
-      background-position: -3rem 0rem;
-    }
-    43%,
-    70% {
-      background-position: 3rem 0rem;
-    }
-    73%,
-    90% {
-      background-position: 0rem 3rem;
-    }
-    93%,
-    100% {
-      background-position: 0rem 0rem;
-    }
-}

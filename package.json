@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "gsap": "^3.12.7"
+  },
+  "name": "gogame",
+  "version": "1.0.0",
+  "main": "aiWorker.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EduardAntonescu233232/GoGame.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EduardAntonescu233232/GoGame/issues"
+  },
+  "homepage": "https://github.com/EduardAntonescu233232/GoGame#readme",
+  "description": "",
+  "devDependencies": {
+    "parcel": "^2.13.3"
+  }
+}
